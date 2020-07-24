@@ -1,0 +1,30 @@
+{
+  "name": "chihuos-websocketchat-client-desktop",
+  "version": "0.0.1",
+  "description": "This is a Websocket Chat Client App.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron .",
+    "package": "electron-packager ./ chihuos-websocketchat-client --all --out ./cwc-desktop --electron-version 9.1.1 --overwrite --icon=logo.ico --asar"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/konnyaku-studio-team/chihuos-websocketchat-client-desktop.git"
+  },
+  "keywords": [
+    "websocket",
+    "electron",
+    "chatroom",
+    "safe"
+  ],
+  "author": "chihuo2104",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/konnyaku-studio-team/chihuos-websocketchat-client-desktop/issues"
+  },
+  "devDependencies": {
+    "electron": "^9.1.1"
+  },
+  "homepage": "https://github.com/konnyaku-studio-team/chihuos-websocketchat-client-desktop#readme"
+}
