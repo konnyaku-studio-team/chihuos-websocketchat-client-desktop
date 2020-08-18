@@ -1,3 +1,26 @@
+var storage_setting;
+if(localStorage.getItem("localstorage_settings")==null){
+    localStorage.setItem("localstorage_settings",false);
+}else{
+    var storage_setting=localStorage.getItem("localstorage_settings");
+    var checkbox=document.getElementById("checkstorage");
+    checkbox.checked=storage_setting;
+}
+if(storage_setting){
+    if(!(localStorage.getItem("server_address")==null)){
+        var serversite=document.getElementById("serversite");
+        serversite.value=localStorage.getItem("server_address");
+        alert("检测到您有服务器存储，已为您自动填充。");
+    }   
+}
+/*
+BASE64
+------------
+|          |
+|          |
+|          |
+------------
+*/
 function Base64() {  
 
     // private property  
@@ -102,35 +125,47 @@ function Base64() {
 }
 var base64=new Base64();
 
-function connectws(){
-    var connectwindow=document.getElementById("connectwindow");
-    connectwindow.style.display="none";
+function connectws(){   
     console.debug("[debug]["+new Date()+"]运行了connectws函数！");
     var serversite=document.getElementById("serversite");
     var messagecontrol=document.getElementById("messagecontrol");
-    wss=new WebSocket(serversite.value);
-    wss.onmessage=function(msg){
-        console.debug("[debug]["+new Date()+"]接收到了ws内容！内容："+msg.data);
-        messagecontrol.innerHTML+="<br>"+base64.decode(msg.data);
-        if("Notification" in Window){
-            alert("草，你的浏览器是不是IE的？怎么连这个也不支持？");
-        }
-        else
-        {
-            if(Notification.permission === "granted"){
-                msNotify = new Notification("新消息！",{body:base64.decode(msg.data)});
+    if(storage_setting){
+        localStorage.setItem("server_address",serversite.value);
+    }
+    try{
+        wss=new WebSocket(serversite.value);
+    }catch(wse){
+        alert("服务器连接错误！错误原因："+wse);
+    }
+    wss.onopen=function(){
+        alert("连接成功！");
+        wss.onmessage=function(msg){
+            console.debug("[debug]["+new Date()+"]接收到了ws内容！内容："+msg.data);
+            messagecontrol.innerHTML+="<br>"+base64.decode(msg.data);
+            if("Notification" in Window){
+                alert("草，你的浏览器是不是IE的？怎么连这个也不支持？");
             }
             else
             {
-                if(Notification.permission === "default"){
-                    Notification.requestPermission(function(){
-                        if(Notification.permission === "granted"){
-                            msNotify = new Notification("新消息！",{body:base64.decode(msg.data)});
-                        }
-                    });
+                if(Notification.permission === "granted"){
+                    msNotify = new Notification("新消息！",{body:base64.decode(msg.data)});
                 }
-            }
-        }
+                else
+                {
+                    if(Notification.permission === "default"){
+                        Notification.requestPermission(function(){
+                            if(Notification.permission === "granted"){
+                                msNotify = new Notification("新消息！",{body:base64.decode(msg.data)});
+                            }
+                        });
+                    }
+                }
+            };
+    };
+    var connectwindow=document.getElementById("connectwindow");
+    var mask=document.getElementById("mask");
+    connectwindow.style.display="none";
+    mask.style.display="none";
     console.log(msg.data);
     }    
 }
@@ -139,13 +174,26 @@ function commitws(){
     var messageinput=document.getElementById("messageinput");
     wss.send(base64.encode(messageinput.value)); 
 }
-function hiddenwindow(){
+function hiddenwindow(wnm){
     console.debug("[debug]["+new Date()+"]运行了hiddenwindow函数！");
-    var connectwindow=document.getElementById("connectwindow");
+    var connectwindow=document.getElementById(wnm);
+    var mask=document.getElementById("mask");
     connectwindow.style.display="none";
+    mask.style.display="none";
 }
-function openwindow(){
+function openwindow(wnm){
     console.debug("[debug]["+new Date()+"]运行了openwindow函数！");
-    var connectwindow=document.getElementById("connectwindow");
+    var connectwindow=document.getElementById(wnm);
+    var mask=document.getElementById("mask");
     connectwindow.style.display="block";
+    mask.style.display="block";
+}
+function getKey(){
+    if(event.keyCode==13){
+        commitws();
+    }
+}
+function changeStorage(){
+    storage_setting=!storage_setting;
+    localStorage.setItem("localstorage_settings",storage_setting);
 }
